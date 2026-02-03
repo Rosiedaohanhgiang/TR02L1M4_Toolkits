@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Rewards Communication Toolkit | Module 4</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1a237e', // Deep Blue
+                        accent: '#FF9800',  // Orange
+                        success: '#009688', // Teal
+                        bgLight: '#F3F4F6',
+                        info: '#E3F2FD',    // Light Blue for Instructions
+                        infoText: '#0D47A1' // Dark Blue for Text
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles & Print Optimization */
+        body { background-color: #F3F4F6; color: #1f2937; }
+        
+        .tab-btn.active {
+            background-color: #1a237e;
+            color: white;
+            border-left: 4px solid #FF9800;
+        }
+
+        .mode-switch input:checked + div {
+            background-color: #009688;
+        }
+        
+        .mode-switch input:checked + div:before {
+            transform: translateX(100%);
+        }
+
+        .paper-sheet {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            min-height: 297mm; /* A4 height */
+            padding: 20mm;
+            margin: auto;
+        }
+
+        /* Input styling specifically for the forms */
+        .form-input {
+            width: 100%;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 8px 0;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Roboto', sans-serif;
+            color: #1a237e;
+            background: transparent;
+        }
+        .form-input:focus {
+            border-color: #FF9800;
+        }
+        .form-label {
+            font-family: 'Oswald', sans-serif;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            margin-top: 1rem;
+            display: block;
+        }
+
+        /* Instruction Box Styles */
+        .instruction-box {
+            background-color: #E3F2FD;
+            border-left: 4px solid #1976D2;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Example Mode Styles */
+        .example-content {
+            font-family: 'Roboto', sans-serif; 
+            color: #4b5563;
+            background-color: #f0fdf4; /* Light green bg */
+            border: 1px dashed #009688;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none !important; }
+            .paper-sheet { 
+                box-shadow: none; 
+                margin: 0; 
+                padding: 0; 
+                width: 100%;
+                min-height: auto;
+            }
+            .print-break { page-break-inside: avoid; }
+            .instruction-box { 
+                border: 1px solid #ddd; /* Make instructions lighter in print */
+                background-color: #f9f9f9;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- HEADER -->
+    <header class="bg-primary text-white p-4 shadow-lg flex justify-between items-center z-10 no-print">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-accent rounded flex items-center justify-center">
+                <i class="ph ph-briefcase text-2xl text-white"></i>
+            </div>
+            <div>
+                <h1 class="font-oswald text-xl uppercase tracking-wider">Total Rewards <span class="text-accent">Workbench</span></h1>
+                <p class="text-xs text-gray-300 font-sans">Module 4: Truyền Thông Đãi Ngộ | Build Talents</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- Mode Toggle -->
+            <div class="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full">
+                <span class="text-xs font-oswald uppercase" id="mode-label">Chế độ Nhập liệu</span>
+                <label class="mode-switch relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggle-mode" class="sr-only peer" onchange="toggleMode()">
+                    <div class="w-11 h-6 bg-gray-500 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
+            </div>
+            
+            <button onclick="window.print()" class="flex items-center gap-2 bg-white text-primary px-4 py-2 rounded font-oswald font-bold hover:bg-gray-100 transition">
+                <i class="ph ph-printer"></i> IN ẤN
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- SIDEBAR NAV -->
+        <nav class="w-64 bg-white border-r border-gray-200 flex flex-col no-print overflow-y-auto">
+            <div class="p-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Danh mục Công cụ</h3>
+                <div class="space-y-2">
+                    <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn active w-full text-left p-3 rounded hover:bg-gray-50 transition flex items-center gap-3">
+                        <i class="ph ph-drop text-xl"></i>
+                        <span class="font-medium">1. Kiểm Toán "Chiếc Xô"</span>
+                    </button>
+                    <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn w-full text-left p-3 rounded hover:bg-gray-50 transition flex items-center gap-3">
+                        <i class="ph ph-calculator text-xl"></i>
+                        <span class="font-medium">2. Quy Đổi Giá Trị (TRS)</span>
+                    </button>
+                    <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn w-full text-left p-3 rounded hover:bg-gray-50 transition flex items-center gap-3">
+                        <i class="ph ph-users-three text-xl"></i>
+                        <span class="font-medium">3. Chân Dung & Kênh</span>
+                    </button>
+                    <button onclick="switchTab('tab4')" id="btn-tab4" class="tab-btn w-full text-left p-3 rounded hover:bg-gray-50 transition flex items-center gap-3">
+                        <i class="ph ph-chats-circle text-xl"></i>
+                        <span class="font-medium">4. Kịch Bản Đối Thoại</span>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-auto p-4 border-t">
+                <button onclick="resetData()" class="text-red-500 text-xs flex items-center gap-1 hover:underline">
+                    <i class="ph ph-trash"></i> Xóa dữ liệu & Làm lại
+                </button>
+            </div>
+        </nav>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto p-8 bg-gray-100 print:bg-white print:p-0">
+            
+            <!-- TAB 1: AUDIT -->
+            <div id="tab1" class="tab-content paper-sheet max-w-4xl mx-auto rounded-lg mb-8">
+                <div class="border-b-4 border-primary pb-4 mb-6 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl font-oswald font-bold text-primary">KIỂM TOÁN "CHIẾC XÔ BỊ RÒ RỈ"</h2>
+                        <p class="text-gray-500">Công cụ đánh giá mức độ lãng phí trong đầu tư đãi ngộ.</p>
+                    </div>
+                    <div class="text-4xl text-accent"><i class="ph ph-drop-half-bottom"></i></div>
+                </div>
+
+                <!-- GUIDANCE BLOCK -->
+                <div class="instruction-box">
+                    <h4 class="font-bold text-infoText flex items-center gap-2 mb-2">
+                        <i class="ph ph-lightbulb"></i> HƯỚNG DẪN & TƯ DUY
+                    </h4>
+                    <p class="text-sm text-gray-700 leading-relaxed mb-2">
+                        <strong>Mục tiêu:</strong> Xác định "Khoảng cách nhận thức" (Perception Gap). Đừng chỉ dựa vào cảm tính, hãy dùng số liệu từ Khảo sát nhân viên (Survey) hoặc Phỏng vấn nhóm (Focus Group) để điền vào cột "Giá trị cảm nhận".
+                    </p>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        <strong>Tư duy:</strong> Nếu Chênh lệch > 30%, bạn đang gặp vấn đề nghiêm trọng về truyền thông, không phải về ngân sách. Đổ thêm tiền vào lúc này là vô ích (như đổ nước vào xô thủng).
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8 mb-8 print-break">
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <label class="form-label">TỔNG CHI PHÍ ĐÃI NGỘ/NV/NĂM (THỰC TẾ)</label>
+                        <div class="input-mode">
+                            <input type="text" id="t1_cost" class="form-input text-2xl font-bold" placeholder="VD: 500,000,000 VNĐ">
+                        </div>
+                        <div class="example-mode hidden example-content">
+                            500,000,000 VNĐ<br>
+                            <span class="text-xs text-gray-500">(Lấy từ Báo cáo tài chính: Tổng quỹ lương + BHXH + Phúc lợi / Số NV)</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <label class="form-label">GIÁ TRỊ NHÂN VIÊN CẢM NHẬN (KHẢO SÁT)</label>
+                        <div class="input-mode">
+                            <input type="text" id="t1_perceived" class="form-input text-2xl font-bold text-accent" placeholder="VD: 300,000,000 VNĐ">
+                        </div>
+                        <div class="example-mode hidden example-content">
+                            360,000,000 VNĐ<br>
+                            <span class="text-xs text-gray-500">(Thường NV chỉ nhớ: Lương Gross x 13 tháng. Họ bỏ quên BHXH và phúc lợi mềm.)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="font-oswald text-lg text-primary border-l-4 border-accent pl-2 mb-4">PHÂN TÍCH ĐIỂM RÒ RỈ (ROOT CAUSE ANALYSIS)</h3>
+                <div class="space-y-6">
+                    <div class="print-break">
+                        <label class="form-label text-red-500">1. ĐIỂM MÙ (BLIND SPOTS) - Phúc lợi nào bị bỏ quên?</label>
+                        <div class="flex gap-4">
+                            <div class="w-3/4">
+                                <div class="input-mode">
+                                    <textarea id="t1_blind" rows="3" class="form-input bg-red-50/50" placeholder="Liệt kê các phúc lợi ít được sử dụng..."></textarea>
+                                </div>
+                                <div class="example-mode hidden example-content">
+                                    1. Khoản đóng góp 21.5% BHXH của công ty (NV coi là đương nhiên).<br>
+                                    2. Chương trình EAP (Tư vấn tâm lý) - Tỷ lệ dùng < 1%.<br>
+                                    3. Chi phí khấu hao Laptop/Trang thiết bị làm việc.
+                                </div>
+                            </div>
+                            <div class="w-1/4">
+                                <div class="input-mode">
+                                    <input id="t1_impact" class="form-input text-center" placeholder="Mức lãng phí (1-5)">
+                                </div>
+                                <div class="example-mode hidden example-content text-center font-bold text-red-500">
+                                    Cao (5/5)
+                                </div>
+                                <label class="text-[10px] text-gray-400 text-center block mt-1">Mức độ ảnh hưởng tài chính</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="print-break">
+                        <label class="form-label text-blue-500">2. NGUYÊN NHÂN CỐT LÕI (THE "WHY")</label>
+                        <div class="input-mode">
+                            <textarea id="t1_cause" rows="3" class="form-input bg-blue-50/50" placeholder="Tại sao họ không biết? Phân tích theo mô hình 3A (Awareness - Accessibility - Appreciation)"></textarea>
+                        </div>
+                        <div class="example-mode hidden example-content">
+                            - <strong>Awareness (Nhận biết):</strong> Sổ tay nhân viên quá dài (50 trang), ngôn ngữ luật khó hiểu.<br>
+                            - <strong>Accessibility (Tiếp cận):</strong> Quy trình đăng ký EAP quá phức tạp, phải qua HR (ngại riêng tư).<br>
+                            - <strong>Appreciation (Đánh giá):</strong> NV trẻ (Gen Z) không quan tâm đến Hưu trí.
+                        </div>
+                    </div>
+
+                    <div class="print-break">
+                        <label class="form-label text-green-500">3. GIẢI PHÁP ĐỀ XUẤT (ACTION PLAN)</label>
+                        <div class="input-mode">
+                            <textarea id="t1_action" rows="3" class="form-input bg-green-50/50" placeholder="Hành động cụ thể để bịt lỗ rò..."></textarea>
+                        </div>
+                        <div class="example-mode hidden example-content">
+                            - Thiết kế lại bản tóm tắt phúc lợi (One-pager) dạng Infographic.<br>
+                            - Tích hợp số liệu BHXH vào Phiếu lương hàng tháng (nhìn thấy = tin tưởng).<br>
+                            - Tổ chức Workshop "Hiểu về tiền lương của bạn" cho nhân viên mới.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: MONETIZATION -->
+            <div id="tab2" class="tab-content hidden paper-sheet max-w-4xl mx-auto rounded-lg mb-8">
+                <div class="border-b-4 border-success pb-4 mb-6 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl font-oswald font-bold text-success">CÔNG THỨC "TIỀN TỆ HÓA" (TRS)</h2>
+                        <p class="text-gray-500">Chuyển đổi "Quyền lợi ẩn" thành "Giá trị tài chính" (Monetization).</p>
+                    </div>
+                    <div class="text-4xl text-primary"><i class="ph ph-currency-dollar"></i></div>
+                </div>
+
+                <!-- GUIDANCE BLOCK -->
+                <div class="instruction-box">
+                    <h4 class="font-bold text-infoText flex items-center gap-2 mb-2">
+                        <i class="ph ph-function"></i> NGUYÊN TẮC QUY ĐỔI
+                    </h4>
+                    <p class="text-sm text-gray-700 leading-relaxed mb-2">
+                        <strong>Tâm lý học:</strong> Nhân viên thường đánh giá thấp những gì "Miễn phí". Việc gắn thẻ giá (Price Tag) cho phúc lợi tạo ra "Hiệu ứng Mỏ neo" (Anchoring Effect), giúp nâng cao giá trị cảm nhận.
+                    </p>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        <strong>Cách tính:</strong> Với các khoản không phải tiền mặt (Non-cash), hãy dùng giá thị trường (Market Value) hoặc chi phí thay thế (Replacement Cost). Ví dụ: Một khóa đào tạo nội bộ có giá trị tương đương khóa học 500$ bên ngoài.
+                    </p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-xs font-oswald text-gray-500 border-b-2 border-primary bg-gray-50">
+                                <th class="py-3 px-2 w-1/4">HẠNG MỤC (Items)</th>
+                                <th class="py-3 px-2 w-1/4">CÔNG THỨC QUY ĐỔI (Formula)</th>
+                                <th class="py-3 px-2 w-1/4">GIÁ TRỊ NĂM (Value)</th>
+                                <th class="py-3 px-2 w-1/4">THÔNG ĐIỆP (Marketing Message)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            
+                            <!-- GROUP 1: BẢO VỆ -->
+                            <tr class="bg-gray-100"><td colspan="4" class="py-2 px-2 font-bold text-xs text-gray-500 uppercase tracking-wider">I. Phúc Lợi Bảo Vệ (Protection & Security)</td></tr>
+                            
+                            <tr class="border-b border-gray-200 align-top print-break">
+                                <td class="py-4 px-2 font-bold text-primary">Bảo Hiểm Xã Hội (21.5%)</td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_f1" class="form-input" rows="2" placeholder="Lương đóng BH x 21.5% x 12"></textarea></div>
+                                    <div class="example-mode hidden example-content">Lương BH (10tr) x 21.5% x 12 tháng</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><input id="t2_v1" class="form-input font-bold" placeholder="... VNĐ"></div>
+                                    <div class="example-mode hidden example-content">25,800,000 VNĐ</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_n1" class="form-input" rows="3" placeholder="Thông điệp..."></textarea></div>
+                                    <div class="example-mode hidden example-content">"Khoản đầu tư cho tương lai hưu trí của bạn. Với mỗi 1 đồng bạn đóng, công ty đóng góp thêm 2 đồng."</div>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-gray-200 align-top print-break">
+                                <td class="py-4 px-2 font-bold text-primary">BH Sức Khỏe (PVI/Bảo Việt)</td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_f4" class="form-input" rows="2" placeholder="Phí mua theo gói/năm"></textarea></div>
+                                    <div class="example-mode hidden example-content">Phí gói Gold + Gói Nha khoa</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><input id="t2_v4" class="form-input font-bold" placeholder="... VNĐ"></div>
+                                    <div class="example-mode hidden example-content">6,500,000 VNĐ</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_n4" class="form-input" rows="3" placeholder="Thông điệp..."></textarea></div>
+                                    <div class="example-mode hidden example-content">"An tâm tuyệt đối với hạn mức bảo vệ lên tới 200 triệu đồng/năm."</div>
+                                </td>
+                            </tr>
+
+                            <!-- GROUP 2: CÔNG CỤ & HỖ TRỢ -->
+                            <tr class="bg-gray-100"><td colspan="4" class="py-2 px-2 font-bold text-xs text-gray-500 uppercase tracking-wider">II. Công Cụ & Môi Trường (Enablers)</td></tr>
+
+                            <tr class="border-b border-gray-200 align-top print-break">
+                                <td class="py-4 px-2 font-bold text-primary">Laptop & Trang thiết bị</td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_f2" class="form-input" rows="2" placeholder="Giá mua mới / Số năm khấu hao (thường là 3)"></textarea></div>
+                                    <div class="example-mode hidden example-content">Macbook Pro (30tr) / 3 năm</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><input id="t2_v2" class="form-input font-bold" placeholder="... VNĐ"></div>
+                                    <div class="example-mode hidden example-content">10,000,000 VNĐ</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_n2" class="form-input" rows="3" placeholder="Thông điệp..."></textarea></div>
+                                    <div class="example-mode hidden example-content">"Trang bị công nghệ hàng đầu để tối ưu hiệu suất làm việc của bạn."</div>
+                                </td>
+                            </tr>
+
+                            <!-- GROUP 3: PHONG CÁCH SỐNG & PHÁT TRIỂN -->
+                            <tr class="bg-gray-100"><td colspan="4" class="py-2 px-2 font-bold text-xs text-gray-500 uppercase tracking-wider">III. Phát Triển & Đời Sống (Growth & Lifestyle)</td></tr>
+
+                            <tr class="border-b border-gray-200 align-top print-break">
+                                <td class="py-4 px-2 font-bold text-primary">Văn hóa & Đào tạo</td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_f3" class="form-input" rows="2" placeholder="(Ngân sách Training + Team building) / Tổng NV"></textarea></div>
+                                    <div class="example-mode hidden example-content">Ngân sách Team building + Training / NV</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><input id="t2_v3" class="form-input font-bold" placeholder="... VNĐ"></div>
+                                    <div class="example-mode hidden example-content">15,000,000 VNĐ</div>
+                                </td>
+                                <td class="py-4 px-2">
+                                    <div class="input-mode"><textarea id="t2_n3" class="form-input" rows="3" placeholder="Thông điệp..."></textarea></div>
+                                    <div class="example-mode hidden example-content">"Đầu tư cho sự nghiệp và cân bằng cuộc sống (Work-life balance) của bạn."</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: PERSONA & CHANNELS -->
+            <div id="tab3" class="tab-content hidden paper-sheet max-w-5xl mx-auto rounded-lg mb-8">
+                <div class="border-b-4 border-primary pb-4 mb-6 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl font-oswald font-bold text-primary">CHÂN DUNG & KÊNH TRUYỀN THÔNG</h2>
+                        <p class="text-gray-500">Chiến lược "May đo" (Tailoring) cho từng thế hệ.</p>
+                    </div>
+                    <div class="text-4xl text-accent"><i class="ph ph-target"></i></div>
+                </div>
+
+                <!-- GUIDANCE BLOCK -->
+                <div class="instruction-box">
+                    <h4 class="font-bold text-infoText flex items-center gap-2 mb-2">
+                        <i class="ph ph-users-three"></i> TƯ DUY PHÂN KHÚC
+                    </h4>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        Không có "Một kích cỡ vừa cho tất cả".
+                        <br>- <strong>Gen Z:</strong> Thích hình ảnh, video ngắn, ghét văn bản dài. Ưu tiên trải nghiệm ngay lập tức.
+                        <br>- <strong>Gen Y:</strong> Nhóm chịu áp lực tài chính lớn nhất (nhà cửa, con cái). Cần thông tin chi tiết, logic.
+                        <br>- <strong>Gen X:</strong> Nhóm lãnh đạo, quan tâm sức khỏe & hưu trí. Cần sự tôn trọng và gặp mặt trực tiếp.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- GEN Z -->
+                    <div class="border border-gray-200 rounded p-4 bg-white shadow-sm print-break">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="ph ph-tiktok-logo text-2xl text-pink-500"></i>
+                            <h3 class="font-oswald font-bold text-lg uppercase">GEN Z (1997-2012)</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Mối quan tâm (Drivers)</label>
+                                <div class="input-mode"><input id="t3_z1" class="form-input" placeholder="Họ cần gì?"></div>
+                                <div class="example-mode hidden example-content">Trải nghiệm, Linh hoạt, Sức khỏe tinh thần (Mental Health).</div>
+                            </div>
+                            <div>
+                                <label class="form-label">Thông điệp (Hook)</label>
+                                <div class="input-mode"><textarea id="t3_z2" class="form-input" rows="2" placeholder="Slogan..."></textarea></div>
+                                <div class="example-mode hidden example-content">"Làm chủ lộ trình, Tận hưởng trải nghiệm."</div>
+                            </div>
+                            <div>
+                                <label class="form-label">Kênh (Channels)</label>
+                                <div class="input-mode"><input id="t3_z3" class="form-input" placeholder="Zalo, TikTok..."></div>
+                                <div class="example-mode hidden example-content">Video ngắn (Reels), Gamification, Zalo.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MILLENNIALS -->
+                    <div class="border border-gray-200 rounded p-4 bg-white shadow-sm print-break">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="ph ph-house-line text-2xl text-blue-500"></i>
+                            <h3 class="font-oswald font-bold text-lg uppercase">MILLENNIALS (GEN Y)</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Mối quan tâm (Drivers)</label>
+                                <div class="input-mode"><input id="t3_y1" class="form-input" placeholder="Họ cần gì?"></div>
+                                <div class="example-mode hidden example-content">Gia đình, Con cái, Mua nhà, Thăng tiến.</div>
+                            </div>
+                            <div>
+                                <label class="form-label">Thông điệp (Hook)</label>
+                                <div class="input-mode"><textarea id="t3_y2" class="form-input" rows="2" placeholder="Slogan..."></textarea></div>
+                                <div class="example-mode hidden example-content">"Vững nền tảng, Sáng tương lai."</div>
+                            </div>
+                            <div>
+                                <label class="form-label">Kênh (Channels)</label>
+                                <div class="input-mode"><input id="t3_y3" class="form-input" placeholder="Email, Intranet..."></div>
+                                <div class="example-mode hidden example-content">Email chi tiết, Intranet, Workshop tài chính.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GEN X -->
+                    <div class="border border-gray-200 rounded p-4 bg-white shadow-sm print-break">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="ph ph-armchair text-2xl text-green-600"></i>
+                            <h3 class="font-oswald font-bold text-lg uppercase">GEN X (1965-1980)</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Mối quan tâm (Drivers)</label>
+                                <div class="input-mode"><input id="t3_x1" class="form-input" placeholder="Họ cần gì?"></div>
+                                <div class="example-mode hidden example-content">Sức khỏe, Hưu trí, Sự ổn định & Tôn trọng.</div>
+                            </div>
+                            <div>
+                                <label class="form-label">Thông điệp (Hook)</label>
+                                <div class="input-mode"><textarea id="t3_x2" class="form-input" rows="2" placeholder="Slogan..."></textarea></div>
+                                <div class="example-mode hidden example-content">"Tri ân cống hiến, An nhàn hưu trí."</div>
+                            </div>
+                            <div>
+                                <label class="form-label">Kênh (Channels)</label>
+                                <div class="input-mode"><input id="t3_x3" class="form-input" placeholder="Họp, Giấy tờ..."></div>
+                                <div class="example-mode hidden example-content">Gặp mặt trực tiếp (1:1), Văn bản in trang trọng.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: SCRIPT -->
+            <div id="tab4" class="tab-content hidden paper-sheet max-w-4xl mx-auto rounded-lg mb-8">
+                <div class="border-b-4 border-accent pb-4 mb-6 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl font-oswald font-bold text-accent">KỊCH BẢN ĐỐI THOẠI (CHEAT SHEET)</h2>
+                        <p class="text-gray-500">Công cụ hỗ trợ Line Managers xử lý các tình huống nhạy cảm về lương thưởng.</p>
+                    </div>
+                    <div class="text-4xl text-primary"><i class="ph ph-chats-teardrop"></i></div>
+                </div>
+
+                <!-- GUIDANCE BLOCK -->
+                <div class="instruction-box">
+                    <h4 class="font-bold text-infoText flex items-center gap-2 mb-2">
+                        <i class="ph ph-steps"></i> QUY TRÌNH 4 BƯỚC (L.E.A.D FRAMEWORK)
+                    </h4>
+                    <ul class="text-sm text-gray-700 leading-relaxed list-disc list-inside">
+                        <li><strong>L - Listen (Lắng nghe):</strong> Để nhân viên xả hết bức xúc, không ngắt lời.</li>
+                        <li><strong>E - Empathize (Đồng cảm):</strong> Xác nhận cảm xúc của họ (không phải xác nhận họ đúng). "Anh hiểu cảm giác của em..."</li>
+                        <li><strong>A - Analyze (Phân tích):</strong> Dùng dữ liệu TRS để lái câu chuyện từ "Lương" sang "Tổng thu nhập".</li>
+                        <li><strong>D - Direct (Định hướng):</strong> Chốt lại bằng kế hoạch tương lai (thăng tiến, học tập).</li>
+                    </ul>
+                </div>
+
+                <!-- SCENARIO 1 -->
+                <div class="mb-8 print-break">
+                    <div class="bg-yellow-50 p-4 border-l-4 border-yellow-400 mb-4">
+                        <strong class="font-oswald text-yellow-800">TÌNH HUỐNG 1: SO SÁNH VỚI BÊN NGOÀI</strong>
+                        <br><span class="text-gray-700 italic text-sm">"Sếp ơi, bạn em làm bên công ty X lương cao hơn em 20%. Em thấy hơi thiệt thòi..."</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="bg-red-50 p-4 border-r border-gray-200">
+                            <div class="flex items-center gap-2 mb-2 text-red-600 font-bold font-oswald">
+                                <i class="ph ph-x-circle"></i> KHÔNG NÊN NÓI
+                            </div>
+                            <div class="input-mode">
+                                <textarea id="t4_s1_dont" class="form-input min-h-[120px] bg-white p-2" placeholder="Các câu trả lời cần tránh..."></textarea>
+                            </div>
+                            <div class="example-mode hidden example-content">
+                                - "Quy chế công ty mình nó thế." (Đổ lỗi)<br>
+                                - "Bên đó áp lực lắm, đừng so sánh." (Phủ nhận)<br>
+                                - "Thích thì em cứ nộp đơn sang đó." (Thách thức)
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-4">
+                            <div class="flex items-center gap-2 mb-2 text-success font-bold font-oswald">
+                                <i class="ph ph-check-circle"></i> NÊN NÓI (Total Rewards)
+                            </div>
+                            <div class="input-mode">
+                                <textarea id="t4_s1_do" class="form-input min-h-[120px] bg-white p-2" placeholder="Kịch bản trả lời..."></textarea>
+                            </div>
+                            <div class="example-mode hidden example-content">
+                                - "Anh hiểu. Lương cơ bản chỉ là bề nổi. Em đã xem bản TRS chưa?"<br>
+                                - "Nếu cộng gói BH 10tr và ngân sách đào tạo 5tr, tổng thu nhập của em là [X] triệu."<br>
+                                - "Ở đây em còn có lộ trình lên Team Lead trong 6 tháng tới..."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCENARIO 2 -->
+                <div class="print-break">
+                    <div class="bg-orange-50 p-4 border-l-4 border-orange-400 mb-4">
+                        <strong class="font-oswald text-orange-800">TÌNH HUỐNG 2: GIỎI NHƯNG KHÔNG ĐƯỢC TĂNG LƯƠNG NHIỀU</strong>
+                        <br><span class="text-gray-700 italic text-sm">"Em đạt 120% KPI nhưng sao mức tăng chỉ có 5%? Em thất vọng quá." (Do ngân sách công ty hạn hẹp)</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="bg-red-50 p-4 border-r border-gray-200">
+                            <div class="flex items-center gap-2 mb-2 text-red-600 font-bold font-oswald">
+                                <i class="ph ph-x-circle"></i> KHÔNG NÊN NÓI
+                            </div>
+                            <div class="input-mode">
+                                <textarea id="t4_s2_dont" class="form-input min-h-[120px] bg-white p-2" placeholder="Các câu trả lời cần tránh..."></textarea>
+                            </div>
+                            <div class="example-mode hidden example-content">
+                                - "Năm nay công ty khó khăn chung, em thông cảm." (Chung chung)<br>
+                                - "5% là cao rồi, nhiều người còn không được tăng." (So sánh tiêu cực)
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-4">
+                            <div class="flex items-center gap-2 mb-2 text-success font-bold font-oswald">
+                                <i class="ph ph-check-circle"></i> NÊN NÓI (Tập trung vào Tương lai)
+                            </div>
+                            <div class="input-mode">
+                                <textarea id="t4_s2_do" class="form-input min-h-[120px] bg-white p-2" placeholder="Kịch bản trả lời..."></textarea>
+                            </div>
+                            <div class="example-mode hidden example-content">
+                                - "Đầu tiên, anh khẳng định em là nhân tố xuất sắc. 5% này là mức trần chung, không phản ánh hết năng lực của em."<br>
+                                - "Để bù đắp, anh đã đề xuất gói thưởng nóng dự án (One-off bonus) và cử em đi học khóa Quản lý."<br>
+                                - "Chúng ta đang đầu tư cho vị trí quản lý năm sau của em, khi đó khung lương sẽ hoàn toàn khác."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER PRINT -->
+            <div class="hidden print:block mt-8 pt-4 border-t border-gray-300 text-center text-xs text-gray-500 font-oswald">
+                <p>Học Liệu Đào Tạo Total Rewards Module 4 | Bản quyền thuộc © Rosie Đào Hạnh Giang - CEO Build Talents</p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- TABS LOGIC ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active state from buttons
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.remove('hidden');
+            // Set button active
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // --- MODE TOGGLE LOGIC (EDIT vs EXAMPLE) ---
+        function toggleMode() {
+            const isExample = document.getElementById('toggle-mode').checked;
+            const inputs = document.querySelectorAll('.input-mode');
+            const examples = document.querySelectorAll('.example-mode');
+            const label = document.getElementById('mode-label');
+
+            if (isExample) {
+                // Show Example, Hide Input
+                inputs.forEach(el => el.classList.add('hidden'));
+                examples.forEach(el => el.classList.remove('hidden'));
+                label.innerText = "Chế độ Bài Mẫu";
+                label.classList.add('text-success');
+            } else {
+                // Show Input, Hide Example
+                inputs.forEach(el => el.classList.remove('hidden'));
+                examples.forEach(el => el.classList.add('hidden'));
+                label.innerText = "Chế độ Nhập liệu";
+                label.classList.remove('text-success');
+            }
+        }
+
+        // --- AUTOSAVE LOGIC (LOCAL STORAGE) ---
+        function initAutoSave() {
+            const inputs = document.querySelectorAll('input[type="text"], textarea');
+            
+            // Load saved data
+            inputs.forEach(input => {
+                const saved = localStorage.getItem(input.id);
+                if (saved) input.value = saved;
+                
+                // Add listener to save on change
+                input.addEventListener('input', function() {
+                    localStorage.setItem(this.id, this.value);
+                });
+            });
+        }
+
+        function resetData() {
+            if(confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu đã nhập? Hành động này không thể hoàn tác.")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // --- INIT ---
+        window.onload = function() {
+            switchTab('tab1'); // Default tab
+            initAutoSave();
+        }
+    </script>
+</body>
+</html>
